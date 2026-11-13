@@ -1,0 +1,71 @@
+entry_id,date,account,debit,credit,memo,asset
+JE-0001,2024-08-12,"Crypto assets, at fair value",147500.00,0,T001: buy 2.5 BTC,BTC
+JE-0001,2024-08-12,Transaction fee expense,295.00,0,T001: buy 2.5 BTC,
+JE-0001,2024-08-12,Cash,0,147795.00,T001: buy 2.5 BTC,
+JE-0002,2024-08-20,"Crypto assets, at fair value",104000.00,0,T002: buy 40 ETH,ETH
+JE-0002,2024-08-20,Transaction fee expense,208.00,0,T002: buy 40 ETH,
+JE-0002,2024-08-20,Cash,0,104208.00,T002: buy 40 ETH,
+JE-0003,2024-09-30,"Crypto assets, at fair value",10750.00,0,"Remeasure BTC to fair value at 63300.00 (ALPHA-US, principal market)",BTC
+JE-0003,2024-09-30,Gain on crypto assets,0,10750.00,"Remeasure BTC to fair value at 63300.00 (ALPHA-US, principal market)",
+JE-0004,2024-11-05,"Crypto assets, at fair value",247500.00,0,T003: buy 1500 SOL,SOL
+JE-0004,2024-11-05,Transaction fee expense,495.00,0,T003: buy 1500 SOL,
+JE-0004,2024-11-05,Cash,0,247995.00,T003: buy 1500 SOL,
+JE-0005,2024-12-31,"Crypto assets, at fair value",75250.00,0,"Remeasure BTC to fair value at 93400.00 (ALPHA-US, principal market)",BTC
+JE-0005,2024-12-31,Gain on crypto assets,0,75250.00,"Remeasure BTC to fair value at 93400.00 (ALPHA-US, principal market)",
+JE-0006,2024-12-31,"Crypto assets, at fair value",29200.00,0,"Remeasure ETH to fair value at 3330.00 (ALPHA-US, principal market)",ETH
+JE-0006,2024-12-31,Gain on crypto assets,0,29200.00,"Remeasure ETH to fair value at 3330.00 (ALPHA-US, principal market)",
+JE-0007,2024-12-31,"Crypto assets, at fair value",36450.00,0,"Remeasure SOL to fair value at 189.30 (ALPHA-US, principal market)",SOL
+JE-0007,2024-12-31,Gain on crypto assets,0,36450.00,"Remeasure SOL to fair value at 189.30 (ALPHA-US, principal market)",
+JE-0008,2025-01-31,"Crypto assets, at fair value",1950.00,0,T004: receive 0.6 ETH as reward,ETH
+JE-0008,2025-01-31,Crypto rewards income,0,1950.00,T004: receive 0.6 ETH as reward,
+JE-0009,2025-03-31,Loss on crypto assets,27375.00,0,"Remeasure BTC to fair value at 82450.00 (ALPHA-US, principal market)",
+JE-0009,2025-03-31,"Crypto assets, at fair value",0,27375.00,"Remeasure BTC to fair value at 82450.00 (ALPHA-US, principal market)",BTC
+JE-0010,2025-03-31,Loss on crypto assets,61160.56,0,"Remeasure ETH to fair value at 1822.40 (ALPHA-US, principal market)",
+JE-0010,2025-03-31,"Crypto assets, at fair value",0,61160.56,"Remeasure ETH to fair value at 1822.40 (ALPHA-US, principal market)",ETH
+JE-0011,2025-03-31,Loss on crypto assets,97050.00,0,"Remeasure SOL to fair value at 124.60 (ALPHA-US, principal market)",
+JE-0011,2025-03-31,"Crypto assets, at fair value",0,97050.00,"Remeasure SOL to fair value at 124.60 (ALPHA-US, principal market)",SOL
+JE-0012,2025-04-10,"Crypto assets, at fair value",81000.00,0,T005: buy 1.0 BTC,BTC
+JE-0012,2025-04-10,Transaction fee expense,162.00,0,T005: buy 1.0 BTC,
+JE-0012,2025-04-10,Cash,0,81162.00,T005: buy 1.0 BTC,
+JE-0013,2025-05-22,Cash,38922.00,0,T006: sell 15 ETH,
+JE-0013,2025-05-22,Transaction fee expense,78.00,0,T006: sell 15 ETH,
+JE-0013,2025-05-22,"Crypto assets, at fair value",0,27336.00,T006: sell 15 ETH,ETH
+JE-0013,2025-05-22,Gain on crypto assets,0,11664.00,T006: sell 15 ETH,
+JE-0014,2025-06-30,"Crypto assets, at fair value",87900.00,0,"Remeasure BTC to fair value at 107150.00 (ALPHA-US, principal market)",BTC
+JE-0014,2025-06-30,Gain on crypto assets,0,87900.00,"Remeasure BTC to fair value at 107150.00 (ALPHA-US, principal market)",
+JE-0015,2025-06-30,"Crypto assets, at fair value",16995.84,0,"Remeasure ETH to fair value at 2486.30 (ALPHA-US, principal market)",ETH
+JE-0015,2025-06-30,Gain on crypto assets,0,16995.84,"Remeasure ETH to fair value at 2486.30 (ALPHA-US, principal market)",
+JE-0016,2025-06-30,"Crypto assets, at fair value",45525.00,0,"Remeasure SOL to fair value at 154.95 (BETA-US, principal market)",SOL
+JE-0016,2025-06-30,Gain on crypto assets,0,45525.00,"Remeasure SOL to fair value at 154.95 (BETA-US, principal market)",
+JE-0017,2025-07-08,Cash,163173.00,0,T007: sell 1.5 BTC,
+JE-0017,2025-07-08,Transaction fee expense,327.00,0,T007: sell 1.5 BTC,
+JE-0017,2025-07-08,"Crypto assets, at fair value",0,160725.00,T007: sell 1.5 BTC,BTC
+JE-0017,2025-07-08,Gain on crypto assets,0,2775.00,T007: sell 1.5 BTC,
+JE-0018,2025-07-31,"Crypto assets, at fair value",1500.00,0,T008: receive 0.4 ETH as reward,ETH
+JE-0018,2025-07-31,Crypto rewards income,0,1500.00,T008: receive 0.4 ETH as reward,
+JE-0019,2025-08-19,"Crypto assets, at fair value",92500.00,0,T009: swap 500 SOL for 21.5 ETH,ETH
+JE-0019,2025-08-19,Transaction fee expense,92.50,0,T009: swap 500 SOL for 21.5 ETH,
+JE-0019,2025-08-19,"Crypto assets, at fair value",0,77475.00,T009: swap 500 SOL for 21.5 ETH,SOL
+JE-0019,2025-08-19,Gain on crypto assets,0,15025.00,T009: swap 500 SOL for 21.5 ETH,
+JE-0019,2025-08-19,Cash,0,92.50,T009: swap 500 SOL for 21.5 ETH,
+JE-0020,2025-09-30,"Crypto assets, at fair value",13740.00,0,"Remeasure BTC to fair value at 114020.00 (ALPHA-US, principal market)",BTC
+JE-0020,2025-09-30,Gain on crypto assets,0,13740.00,"Remeasure BTC to fair value at 114020.00 (ALPHA-US, principal market)",
+JE-0021,2025-09-30,"Crypto assets, at fair value",42659.72,0,"Remeasure ETH to fair value at 4146.50 (ALPHA-US, principal market)",ETH
+JE-0021,2025-09-30,Gain on crypto assets,0,42659.72,"Remeasure ETH to fair value at 4146.50 (ALPHA-US, principal market)",
+JE-0021,2025-09-30,Loss on crypto assets,3350.25,0,"Remeasure ETH to fair value at 4146.50 (ALPHA-US, principal market)",
+JE-0021,2025-09-30,"Crypto assets, at fair value",0,3350.25,"Remeasure ETH to fair value at 4146.50 (ALPHA-US, principal market)",ETH
+JE-0022,2025-09-30,"Crypto assets, at fair value",53800.00,0,"Remeasure SOL to fair value at 208.75 (BETA-US, principal market)",SOL
+JE-0022,2025-09-30,Gain on crypto assets,0,53800.00,"Remeasure SOL to fair value at 208.75 (BETA-US, principal market)",
+JE-0023,2025-10-02,"Crypto assets, at fair value",41500.00,0,T010: buy 10 ETH,ETH
+JE-0023,2025-10-02,Transaction fee expense,83.00,0,T010: buy 10 ETH,
+JE-0023,2025-10-02,Cash,0,41583.00,T010: buy 10 ETH,
+JE-0024,2025-11-14,Cash,56287.20,0,T011: sell 400 SOL,
+JE-0024,2025-11-14,Transaction fee expense,112.80,0,T011: sell 400 SOL,
+JE-0024,2025-11-14,Loss on crypto assets,27100.00,0,T011: sell 400 SOL,
+JE-0024,2025-11-14,"Crypto assets, at fair value",0,83500.00,T011: sell 400 SOL,SOL
+JE-0025,2025-12-31,Loss on crypto assets,35440.00,0,"Remeasure BTC to fair value at 96300.00 (ALPHA-US, principal market)",
+JE-0025,2025-12-31,"Crypto assets, at fair value",0,35440.00,"Remeasure BTC to fair value at 96300.00 (ALPHA-US, principal market)",BTC
+JE-0026,2025-12-31,Loss on crypto assets,48087.75,0,"Remeasure ETH to fair value at 3310.80 (ALPHA-US, principal market)",
+JE-0026,2025-12-31,"Crypto assets, at fair value",0,48087.75,"Remeasure ETH to fair value at 3310.80 (ALPHA-US, principal market)",ETH
+JE-0027,2025-12-31,Loss on crypto assets,41580.00,0,"Remeasure SOL to fair value at 139.45 (BETA-US, principal market)",
+JE-0027,2025-12-31,"Crypto assets, at fair value",0,41580.00,"Remeasure SOL to fair value at 139.45 (BETA-US, principal market)",SOL

@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cryptofv · live fair value</title>
+<style>
+:root{color-scheme:light;--page:#f9f9f7;--surface-1:#fcfcfb;--surface-2:#f1f0ec;--text-primary:#0b0b0b;--text-secondary:#52514e;
+--muted:#898781;--grid:#e1e0d9;--base:#c3c2b7;--border:rgba(11,11,11,.10);--accent:#2a78d6;--accent-ink:#fff;
+--series-1:#2a78d6;--series-2:#eb6834;--series-3:#1baf7a;--series-4:#eda100;--series-5:#e87ba4;
+--series-6:#008300;--series-7:#6250d6;--series-8:#e34948;--other:#a3a29b;--good:#0ca30c;--good-ink:#006300;--critical:#d03b3b;--warning:#fab219}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--page:#0d0d0d;--surface-1:#1a1a19;--surface-2:#242422;--text-primary:#f0efec;
+--text-secondary:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--base:#383835;--border:rgba(255,255,255,.10);--accent:#3987e5;
+--series-1:#3987e5;--series-2:#d95926;--series-3:#199e70;--series-4:#c98500;--series-5:#d55181;
+--series-6:#008300;--series-7:#9085e9;--series-8:#e66767;--other:#6b6a65;--good-ink:#0ca30c;--critical:#e66767}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--page);color:var(--text-primary);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+.top{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--border)}
+.top .wrap{display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+.brand{font-weight:700;font-size:17px;letter-spacing:-.01em}.brand span{color:var(--text-secondary);font-weight:500}
+.spacer{flex:1}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border:1px solid var(--border);border-radius:999px;background:var(--surface-1);font-size:13px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 var(--good);animation:pulse 2s infinite}
+.pill.sim .dot{background:var(--warning);animation:none}.pill.off .dot{background:var(--critical);animation:none}.pill.paused .dot{background:var(--muted);animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(12,163,12,.5)}70%{box-shadow:0 0 0 7px rgba(12,163,12,0)}100%{box-shadow:0 0 0 0 rgba(12,163,12,0)}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+.ctl{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)}
+select,input{background:var(--surface-1);border:1px solid var(--base);border-radius:7px;padding:6px 9px;min-width:0}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.btn{background:var(--surface-1);border:1px solid var(--base);border-radius:7px;padding:6px 12px;cursor:pointer}
+.btn:hover{background:var(--surface-2)}.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.primary:hover{filter:brightness(1.08)}.btn.danger{color:var(--critical);border-color:var(--critical)}.btn.small{padding:2px 9px;font-size:12px}
+.btn:disabled{opacity:.55;cursor:default}
+main.wrap{padding-top:18px;padding-bottom:56px}
+.banner{border:1px solid var(--border);border-left:4px solid var(--warning);background:var(--surface-1);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px}
+.banner.err{border-left-color:var(--critical)}.banner ul{margin:4px 0 0;padding-left:18px}.banner summary{cursor:pointer;font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:14px}
+.tile,.card{background:var(--surface-1);border:1px solid var(--border);border-radius:10px;padding:16px;min-width:0}
+.tile-l{color:var(--text-secondary);font-size:13px}
+.tile-v{font-size:26px;font-weight:650;margin:2px 0;display:flex;align-items:baseline;gap:8px;overflow-wrap:anywhere}
+.tile-n{color:var(--muted);font-size:12px}
+.tick{font-size:12px;font-weight:600;color:var(--text-secondary);opacity:0;transition:opacity .25s}.tick.on{opacity:1}
+.spark{width:100%;height:30px;margin-top:6px;display:block}.spark polyline{fill:none;stroke:var(--series-1);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto}
+.tab{background:none;border:none;border-bottom:2px solid transparent;padding:9px 14px;cursor:pointer;color:var(--text-secondary);font-weight:600;white-space:nowrap}
+.tab[aria-selected=true]{color:var(--text-primary);border-bottom-color:var(--accent)}
+.count{background:var(--surface-2);border-radius:999px;padding:0 7px;font-size:11px;margin-left:4px;font-weight:600}
+.panel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.panel[hidden]{display:none}.wide{grid-column:1/-1}
+h2{font-size:15px;margin:0;font-weight:650}.sub{color:var(--text-secondary);margin:2px 0 12px;font-size:13px}
+p.note{margin:10px 0 0;color:var(--text-secondary);font-size:13px;max-width:90ch}
+svg.chart,.chartbox svg{width:100%;height:auto;display:block;overflow:visible}
+.grid{stroke:var(--grid);stroke-width:1}.base{stroke:var(--base);stroke-width:1}
+.chartbox .tick{fill:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;opacity:1}
+.endlabel{fill:var(--text-primary);font-size:12px;font-weight:600}
+.line{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}.chartbox .dot{stroke:var(--surface-1);stroke-width:2;animation:none;box-shadow:none;border-radius:0}
+.xhair{stroke:var(--base);stroke-width:1;opacity:0;pointer-events:none}.hit:hover .xhair,.hit:focus .xhair{opacity:1}.hit,.bar{outline:none}
+.bar:hover,.bar:focus{filter:brightness(1.15)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--text-secondary);font-size:12px;margin-bottom:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.key-box{width:10px;height:10px;border-radius:2px;display:inline-block}.key-line{width:14px;height:2px;border-radius:1px;display:inline-block}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--grid);white-space:nowrap}
+th{color:var(--text-secondary);font-weight:600;font-size:12px}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.total td{font-weight:650;border-top:1px solid var(--base);border-bottom:none}
+td.wrapcell{white-space:normal;min-width:220px;color:var(--text-secondary)}
+.tag{display:inline-block;border:1px solid var(--base);border-radius:999px;padding:0 8px;font-size:11px;font-weight:600}
+.tag.sel{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}.tag.no{color:var(--muted)}
+.form{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 12px;align-items:end}
+.form label{display:grid;gap:3px;font-size:12px;color:var(--text-secondary)}.form input,.form select{width:100%}
+.form .actions{grid-column:1/-1;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.msg{font-size:13px}.msg.err{color:var(--critical)}.msg.ok{color:var(--good-ink)}
+.controls{list-style:none;margin:0;padding:0;display:grid;gap:10px}.controls li{display:flex;gap:10px;align-items:flex-start}
+.mark{font-weight:700;font-size:15px;line-height:1.4}.mark.good{color:var(--good)}.mark.bad{color:var(--critical)}
+.controls .sub{margin:0}.state{color:var(--text-secondary);font-size:12px;margin-left:4px}
+.links{display:flex;gap:8px;flex-wrap:wrap}.links a{color:inherit;text-decoration:none}
+dialog{border:1px solid var(--border);border-radius:12px;background:var(--surface-1);color:var(--text-primary);padding:22px;width:min(560px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h2{font-size:17px}dialog label{display:grid;gap:3px;font-size:12px;color:var(--text-secondary);margin-top:10px}dialog input{width:100%}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin:12px 0;font-size:13px}.dl dt{color:var(--text-secondary)}.dl dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.dactions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;align-items:center;flex-wrap:wrap}
+.fp{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+.empty{color:var(--text-secondary);padding:18px 0;text-align:center}
+.tip{position:fixed;z-index:10;pointer-events:none;background:var(--surface-1);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,.16);max-width:280px}
+.tip-h{color:var(--text-secondary);margin-bottom:4px}.tip-r{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tip-r strong{font-variant-numeric:tabular-nums}.tip-r span:last-child{color:var(--text-secondary)}.tip-k{width:12px;height:2px;border-radius:1px;flex:none}
+@media (max-width:860px){.panel{grid-template-columns:minmax(0,1fr)}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap">
+  <div class="brand">cryptofv <span>· live fair value</span></div>
+  <div class="spacer"></div>
+  <label class="ctl">Cost basis <select id="method" aria-label="Cost basis method"></select></label>
+  <button class="btn" id="pause" type="button">Pause</button>
+  <button class="btn primary" id="close-open" type="button">Close period</button>
+  <div class="pill off" id="status" role="status"><span class="dot"></span><span id="status-text">Connecting</span></div>
+</div></div>
+
+<main class="wrap">
+  <div id="banners"></div>
+  <div class="tiles" id="tiles"></div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="overview" aria-selected="true">Overview</button>
+    <button class="tab" role="tab" data-tab="markets" aria-selected="false">Markets</button>
+    <button class="tab" role="tab" data-tab="transactions" aria-selected="false">Transactions<span class="count" id="tx-count">0</span></button>
+    <button class="tab" role="tab" data-tab="journal" aria-selected="false">Journal</button>
+    <button class="tab" role="tab" data-tab="controls" aria-selected="false">Controls<span class="count" id="ctl-count"></span></button>
+  </div>
+
+  <section class="panel" id="p-overview" role="tabpanel">
+    <div class="card wide"><h2>Carrying amount under three measurement bases</h2>
+      <p class="sub">Each reporting date, then the position right now. The gap between blue and green is value the legacy model could not recognise.</p>
+      <div class="chartbox" id="c-bases"></div></div>
+    <div class="card"><h2>Gain or loss recognised each period</h2><p class="sub">The last pair is the current period to date.</p><div class="chartbox" id="c-pnl"></div></div>
+    <div class="card"><h2>Fair value by asset</h2><p class="sub">Holdings at each reporting date and now.</p><div class="chartbox" id="c-assets"></div></div>
+    <div class="card wide"><h2>Holdings now</h2><p class="sub">Units, cost basis and fair value at the live principal-market price.</p><div id="t-holdings"></div></div>
+    <div class="card wide"><h2 id="h-roll">Period to date</h2><p class="sub">Activity since the last reporting date, as it would appear in the rollforward if the period closed now.</p><div id="t-roll"></div></div>
+    <div class="card wide"><h2>Price sensitivity</h2><p class="sub">Pre-tax effect on net income of a uniform move in all prices from here.</p><div id="t-shocks"></div></div>
+  </section>
+
+  <section class="panel" id="p-markets" role="tabpanel" hidden></section>
+
+  <section class="panel" id="p-transactions" role="tabpanel" hidden>
+    <div class="card wide"><h2>Add a transaction</h2><p class="sub">It is checked against the whole ledger before it is saved.</p>
+      <form class="form" id="tx-form" autocomplete="off">
+        <label>Type<select name="type"><option value="buy">Buy</option><option value="sell">Sell</option><option value="swap">Swap</option><option value="reward">Reward</option></select></label>
+        <label>Date<input name="date" type="date" required></label>
+        <label><span id="l-asset">Asset</span><input name="asset" placeholder="BTC" required maxlength="10"></label>
+        <label>Units<input name="units" inputmode="decimal" placeholder="0.5" required></label>
+        <label><span id="l-amount">Cash paid (USD)</span><input name="amount" inputmode="decimal" placeholder="45,000.00" required></label>
+        <label>Cash fee (USD)<input name="fee" inputmode="decimal" placeholder="0.00"></label>
+        <label class="swap-only" hidden>Asset received<input name="to_asset" placeholder="ETH" maxlength="10"></label>
+        <label class="swap-only" hidden>Units received<input name="to_units" inputmode="decimal" placeholder="12"></label>
+        <div class="actions"><button class="btn primary" type="submit" id="tx-submit">Add transaction</button><span class="msg" id="tx-msg" role="status"></span></div>
+      </form></div>
+    <div class="card wide"><h2>Ledger</h2><p class="sub">Every transaction on file, newest first.</p><div id="t-tx"></div></div>
+  </section>
+
+  <section class="panel" id="p-journal" role="tabpanel" hidden>
+    <div class="card wide"><h2>Journal entries</h2><p class="sub">Generated from the ledger, including a provisional remeasurement at the live price.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <input id="j-filter" placeholder="Filter by account, asset or memo" aria-label="Filter journal" style="flex:1;min-width:220px">
+        <div class="links"><a class="btn" href="/api/export/journal_entries.csv">Journal CSV</a><a class="btn" href="/api/export/holdings.csv">Holdings CSV</a><a class="btn" href="/api/export/lots.csv">Lots CSV</a><a class="btn" href="/api/export/rollforward.csv">Rollforward CSV</a><a class="btn" href="/report.html" target="_blank" rel="noopener">Printable report</a></div>
+      </div><div id="t-journal"></div></div>
+    <div class="card wide"><h2>Trial balance</h2><p class="sub">Cumulative balances by account.</p><div id="t-tb"></div></div>
+  </section>
+
+  <section class="panel" id="p-controls" role="tabpanel" hidden>
+    <div class="card"><h2>Reconciliation controls</h2><p class="sub">Re-run on every price update. Each derives the same number two independent ways.</p><ul class="controls" id="l-controls"></ul></div>
+    <div class="card"><h2>Open lots</h2><p class="sub">The subledger behind the holdings.</p><div id="t-lots"></div></div>
+    <div class="card wide"><h2>Closed periods</h2><p class="sub">Each close froze its price evidence and locked the period. The fingerprint is re-checked on every update.</p><div id="t-closes"></div></div>
+    <div class="card wide"><h2>Fair value against the legacy model</h2><p class="sub">ASC 350-60 beside cost less impairment, by reporting date. The last row is now.</p><div id="t-comp"></div></div>
+  </section>
+</main>
+<dialog id="close-dlg" aria-labelledby="close-title">
+  <h2 id="close-title">Close the period</h2>
+  <p class="sub" id="close-sub"></p>
+  <div id="close-body"></div>
+  <form id="close-form" autocomplete="off">
+    <label>Prepared by<input name="prepared_by" maxlength="80" placeholder="Your name"></label>
+    <label>Note for the memo (optional)<input name="note" maxlength="500" placeholder="Anything a reviewer should know"></label>
+    <div class="dactions"><span class="msg" id="close-msg" role="status"></span>
+      <button class="btn" type="button" id="close-cancel">Cancel</button>
+      <button class="btn primary" type="submit" id="close-submit">Close period and write memo</button></div>
+  </form>
+</dialog>
+<div id="tip" class="tip" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var nf2 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  var nf0 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+  var state = null, paused = false, timer = null, lastTiles = {}, trail = [], pendingDelete = null, busy = false;
+
+  function el(tag, props) {
+    var e = document.createElement(tag), i, k;
+    for (k in (props || {})) {
+      if (k === 'class') e.className = props[k];
+      else if (k === 'text') e.textContent = props[k];
+      else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), props[k]);
+      else e.setAttribute(k, props[k]);
+    }
+    for (i = 2; i < arguments.length; i++) {
+      [].concat(arguments[i]).forEach(function (c) { if (c != null) e.append(c); });
+    }
+    return e;
+  }
+  function money(s) { var n = Number(s); return n < 0 ? '(' + nf2.format(-n) + ')' : nf2.format(n); }
+  function whole(s) { var n = Number(s); return n < 0 ? '(' + nf0.format(-n) + ')' : nf0.format(n); }
+  function signed(s) { var n = Math.round(Number(s)); return (n > 0 ? '+' : n < 0 ? '−' : '') + nf0.format(Math.abs(n)); }
+  function units(s) { return String(s).indexOf('.') < 0 ? s : String(s).replace(/0+$/, '').replace(/\.$/, ''); }
+  function compact(s) { var n = Number(s); return n >= 1e9 ? (n / 1e9).toFixed(1) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : nf0.format(n); }
+  function neg(s) { return String(-Number(s)); }
+
+  // cells: strings, or DOM nodes for tags and buttons
+  function table(headers, rows, textCols, totalLast) {
+    if (!rows.length) return el('div', { class: 'empty', text: 'Nothing to show yet.' });
+    var head = el('tr', {}, headers.map(function (h, i) { return el('th', { class: i < textCols ? '' : 'num', text: h }); }));
+    var body = rows.map(function (r, ri) {
+      return el('tr', { class: totalLast && ri === rows.length - 1 ? 'total' : '' }, r.map(function (c, i) {
+        var td = el('td', { class: i < textCols ? '' : 'num' });
+        if (c && c.wrap) { td.className = 'wrapcell'; td.textContent = c.wrap; }
+        else if (c instanceof Node) td.append(c); else td.textContent = c == null ? '' : c;
+        return td;
+      }));
+    });
+    return el('div', { class: 'scroll' }, el('table', {}, el('thead', {}, head), el('tbody', {}, body)));
+  }
+  function put(sel, node) { $(sel).replaceChildren(node); }
+  function sum(rows, key) { return String(rows.reduce(function (a, r) { return a + Number(r[key]); }, 0)); }
+
+  // ------------------------------------------------------------- rendering
+  function renderStatus(ok) {
+    var pill = $('#status'), text;
+    if (!ok) { pill.className = 'pill off'; text = 'Disconnected, retrying'; }
+    else if (paused) { pill.className = 'pill paused'; text = 'Paused'; }
+    else if (state.closed_today) { pill.className = 'pill paused'; text = 'Closed for ' + state.today; }
+    else {
+      pill.className = 'pill' + (state.simulated ? ' sim' : '');
+      text = (state.simulated ? 'Simulated prices' : 'Live · ' + state.feed) + ' · ' + new Date(state.as_of).toLocaleTimeString();
+    }
+    $('#status-text').textContent = text;
+  }
+
+  function renderBanners() {
+    var box = $('#banners'); box.replaceChildren();
+    if (state.error) box.append(el('div', { class: 'banner err' }, el('strong', { text: 'The ledger could not be processed. ' }), state.error + ' Fix or delete the transaction on the Transactions tab.'));
+    if (state.simulated) box.append(el('div', { class: 'banner', text: 'Demo mode: prices are a random walk around the sample quotes, not market data. Start without --demo for live exchange prices.' }));
+    var w = state.warnings || [];
+    if (w.length) box.append(el('details', { class: 'banner' }, el('summary', { text: w.length + ' price feed notice' + (w.length > 1 ? 's' : '') }), el('ul', {}, w.map(function (x) { return el('li', { text: x }); }))));
+  }
+
+  function tile(key, label, value, note, raw) {
+    var prev = lastTiles[key], dir = prev == null || prev === raw ? '' : (raw > prev ? '▲ up' : '▼ down');
+    lastTiles[key] = raw;
+    var tick = el('span', { class: 'tick' + (dir ? ' on' : ''), text: dir });
+    if (dir) setTimeout(function () { tick.classList.remove('on'); }, 1600);
+    return el('div', { class: 'tile' }, el('div', { class: 'tile-l', text: label }), el('div', { class: 'tile-v' }, el('span', { text: value }), tick), el('div', { class: 'tile-n', text: note }));
+  }
+  function spark() {
+    var ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'spark'); svg.setAttribute('viewBox', '0 0 200 30'); svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Fair value during this session');
+    if (trail.length > 1) {
+      var lo = Math.min.apply(null, trail), hi = Math.max.apply(null, trail), span = (hi - lo) || 1;
+      var pl = document.createElementNS(ns, 'polyline');
+      pl.setAttribute('points', trail.map(function (v, i) { return (i * 200 / (trail.length - 1)).toFixed(1) + ',' + (27 - 24 * (v - lo) / span).toFixed(1); }).join(' '));
+      pl.setAttribute('vector-effect', 'non-scaling-stroke'); svg.append(pl);
+    }
+    return svg;
+  }
+  function renderTiles() {
+    var t = state.tiles, since = state.period_start ? 'since ' + state.period_start : 'since inception';
+    var fv = tile('fv', 'Fair value now', whole(t.fair_value), 'this session', Number(t.fair_value));
+    fv.append(spark());
+    $('#tiles').replaceChildren(fv,
+      tile('un', 'Unrealised gain or loss', signed(t.unrealized), 'against cost basis of ' + whole(t.cost_basis), Number(t.unrealized)),
+      tile('pl', 'Gain or loss, period to date', signed(t.period_gain_loss), since + ', in net income', Number(t.period_gain_loss)),
+      tile('lg', 'Above legacy carrying amount', signed(t.legacy_difference), 'fair value less cost-less-impairment', Number(t.legacy_difference)));
+  }
+
+  function renderOverview() {
+    ['bases', 'pnl', 'assets'].forEach(function (k) { $('#c-' + k).innerHTML = (state.charts || {})[k] || ''; }); // server-rendered, escaped SVG
+    var h = state.holdings;
+    var rows = h.map(function (x) { return [x.asset, units(x.units), money(x.price), money(x.cost_basis), money(x.fair_value), money(Number(x.fair_value) - Number(x.cost_basis)), x.market, x.level]; });
+    if (h.length) rows.push(['Total', '', '', money(sum(h, 'cost_basis')), money(sum(h, 'fair_value')), money(Number(sum(h, 'fair_value')) - Number(sum(h, 'cost_basis'))), '', '']);
+    put('#t-holdings', table(['Asset', 'Units', 'Live price', 'Cost basis', 'Fair value', 'Unrealised', 'Principal market', 'Hierarchy'], rows, 1, true));
+
+    $('#h-roll').textContent = 'Period to date' + (state.period_start ? ' (since ' + state.period_start + ')' : '');
+    var r = state.rollforward, cols = ['opening', 'additions', 'dispositions', 'gains', 'losses', 'closing'];
+    var cell = function (row, c) { return money(c === 'dispositions' || c === 'losses' ? neg(row[c]) : row[c]); };
+    var rr = r.map(function (x) { return [x.asset].concat(cols.map(function (c) { return cell(x, c); })); });
+    if (r.length) { var tot = {}; cols.forEach(function (c) { tot[c] = sum(r, c); }); rr.push(['Total'].concat(cols.map(function (c) { return cell(tot, c); }))); }
+    put('#t-roll', table(['Asset', 'Opening fair value', 'Additions', 'Dispositions', 'Gains', 'Losses', 'Fair value now'], rr, 1, true));
+
+    put('#t-shocks', table(['Price move', 'Fair value', 'Effect on pre-tax income'], state.shocks.map(function (s) { return [(s.shock_pct > 0 ? '+' : '') + s.shock_pct + '%', money(s.fair_value), money(s.pre_tax_effect)]; }), 1));
+  }
+
+  function renderMarkets() {
+    var box = $('#p-markets');
+    if (!state.markets.length) return box.replaceChildren(el('div', { class: 'card wide' }, el('div', { class: 'empty', text: 'No holdings to price. Add a transaction to begin.' })));
+    box.replaceChildren.apply(box, state.markets.map(function (m) {
+      var rows = m.quotes.map(function (q) {
+        var tag = q.selected ? el('span', { class: 'tag sel', text: 'Principal market' }) : el('span', { class: 'tag' + (q.accessible ? '' : ' no'), text: q.accessible ? 'Accessible' : 'Not accessible' });
+        return [q.market, tag, money(q.price), compact(q.volume), money(q.fair_value), money(q.difference)];
+      });
+      return el('div', { class: 'card wide' },
+        el('h2', { text: m.asset + ' · ' + units(m.units) + ' units · ' + money(m.fair_value) }),
+        el('p', { class: 'sub', text: m.level + ', ' + m.basis + ' market' }),
+        table(['Market', 'Status', 'Price', '24h volume (USD)', 'Fair value if used', 'Difference'], rows, 2),
+        el('p', { class: 'note', text: m.rationale + (Number(m.spread) ? ' Across accessible markets the measurement ranges by ' + money(m.spread) + ' (' + m.spread_bps + ' bps).' : '') }));
+    }));
+  }
+
+  function renderTransactions() {
+    var tx = state.transactions || [];
+    $('#tx-count').textContent = tx.length;
+    var rows = tx.slice().reverse().map(function (t) {
+      var confirm = pendingDelete === t.tx_id;
+      var btn = el('button', { class: 'btn small' + (confirm ? ' danger' : ''), type: 'button', text: confirm ? 'Confirm delete' : 'Delete', onclick: function () { removeTx(t.tx_id); } });
+      var what = t.type === 'swap' ? units(t.units) + ' ' + t.asset + ' → ' + units(t.to_units) + ' ' + t.to_asset : units(t.units) + ' ' + t.asset;
+      return [t.tx_id, t.date, t.type.charAt(0).toUpperCase() + t.type.slice(1), what, money(t.amount), money(t.fee), btn];
+    });
+    put('#t-tx', table(['ID', 'Date', 'Type', 'Units', 'Amount (USD)', 'Fee', ''], rows, 4));
+  }
+
+  function renderJournal() {
+    var f = $('#j-filter').value.trim().toLowerCase();
+    var lines = (state.journal || []).filter(function (j) { return !f || (j.account + ' ' + j.asset + ' ' + j.memo + ' ' + j.entry_id).toLowerCase().indexOf(f) >= 0; });
+    var rows = lines.slice().reverse().map(function (j) { return [j.entry_id, j.date, j.account, j.asset, { wrap: j.memo }, Number(j.debit) ? money(j.debit) : '', Number(j.credit) ? money(j.credit) : '']; });
+    put('#t-journal', table(['Entry', 'Date', 'Account', 'Asset', 'Memo', 'Debit', 'Credit'], rows, 5));
+    var tb = state.trial_balance || [], tr = tb.map(function (t) { return [t.account, Number(t.debit) ? money(t.debit) : '', Number(t.credit) ? money(t.credit) : '']; });
+    if (tb.length) tr.push(['Total', money(sum(tb, 'debit')), money(sum(tb, 'credit'))]);
+    put('#t-tb', table(['Account', 'Debit', 'Credit'], tr, 1, true));
+  }
+
+  function renderControls() {
+    var c = state.controls || [], passed = c.filter(function (x) { return x.passed; }).length;
+    $('#ctl-count').textContent = c.length ? passed + '/' + c.length : '';
+    $('#l-controls').replaceChildren.apply($('#l-controls'), c.map(function (x) {
+      return el('li', {}, el('span', { class: 'mark ' + (x.passed ? 'good' : 'bad'), 'aria-hidden': 'true', text: x.passed ? '✓' : '✕' }),
+        el('div', {}, el('strong', { text: x.name }), el('span', { class: 'state', text: x.passed ? 'Passed' : 'Failed' }), el('div', { class: 'sub', text: x.detail })));
+    }));
+    put('#t-lots', table(['Asset', 'Lot', 'Acquired', 'Units', 'Cost basis', 'Fair value'], (state.lots || []).map(function (l) { return [l.asset, l.lot_id, l.acquired, units(l.units), money(l.cost_basis), money(l.fair_value)]; }), 3));
+    var closes = state.closes || [];
+    put('#t-closes', closes.length ? table(['Period end', 'Snapshot (UTC)', 'Prepared by', 'Fingerprint', 'Integrity', 'Fair value', 'Gain or loss', ''],
+      closes.map(function (c) {
+        var ok = el('span', { title: c.detail }, el('span', { class: 'mark ' + (c.intact ? 'good' : 'bad'), 'aria-hidden': 'true', text: c.intact ? '\u2713 ' : '\u2715 ' }), c.intact ? 'Intact' : 'Altered');
+        return [c.period_end, c.closed_at.replace('T', ' ').replace('+00:00', ''), c.prepared_by || '\u2014',
+          el('span', { class: 'fp', text: c.fingerprint.slice(0, 12) + '\u2026', title: c.fingerprint }), ok,
+          money(c.fair_value), money(c.period_gain_loss),
+          el('a', { class: 'btn small', href: '/closes/' + c.period_end + '.html', target: '_blank', rel: 'noopener', text: 'Open memo' })];
+      }), 5) : el('div', { class: 'empty', text: 'No periods closed yet. Use Close period in the header when the numbers are final.' }));
+    var comp = state.comparison || [];
+    put('#t-comp', table(['Date', 'Fair value', 'Legacy carrying', 'Cumulative difference', 'Fair value gain or loss', 'Legacy gain or loss', 'Period difference'],
+      comp.map(function (x, i) { return [i === comp.length - 1 ? 'Now' : x.period_end, money(x.fair_value), money(x.legacy_carrying), money(x.cumulative_difference), money(x.fv_gain_loss), money(x.legacy_gain_loss), money(x.period_difference)]; }), 1));
+  }
+
+  function render() {
+    var sel = $('#method');
+    if (!sel.options.length) (state.cost_methods || []).forEach(function (m) { sel.append(el('option', { value: m, text: m.toUpperCase() })); });
+    if (document.activeElement !== sel) sel.value = state.cost_method;
+    renderBanners(); renderTransactions();
+    if (state.error) { renderStatus(true); return; }
+    trail.push(Number(state.tiles.fair_value)); if (trail.length > 90) trail.shift();
+    renderTiles(); renderOverview(); renderMarkets(); renderJournal(); renderControls(); renderStatus(true);
+  }
+
+  // ------------------------------------------------------------------ data
+  function api(method, url, body) {
+    return fetch(url, { method: method, headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined })
+      .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'Request failed'); return d; }); });
+  }
+  function schedule() { clearTimeout(timer); if (!paused) timer = setTimeout(poll, ((state && state.refresh) || 5) * 1000); }
+  function poll() {
+    if (busy) return schedule();
+    return api('GET', '/api/state').then(function (s) { state = s; render(); }).catch(function () { renderStatus(false); }).then(schedule);
+  }
+
+  function removeTx(id) {
+    if (pendingDelete !== id) { pendingDelete = id; renderTransactions(); return; }
+    pendingDelete = null; busy = true;
+    api('DELETE', '/api/transactions/' + encodeURIComponent(id))
+      .then(function () { say('Deleted ' + id + '.', true); })
+      .catch(function (e) { say(e.message, false); })
+      .then(function () { busy = false; return poll(); });
+  }
+  function say(text, ok) { var m = $('#tx-msg'); m.textContent = text; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
+
+  var form = $('#tx-form');
+  function syncForm() {
+    var t = form.elements.type.value, swap = t === 'swap';
+    form.querySelectorAll('.swap-only').forEach(function (n) { n.hidden = !swap; n.querySelector('input').required = swap; });
+    $('#l-asset').textContent = swap ? 'Asset given up' : 'Asset';
+    $('#l-amount').textContent = { buy: 'Cash paid (USD)', sell: 'Cash received (USD)', swap: 'Fair value of exchange (USD)', reward: 'Fair value received (USD)' }[t];
+  }
+  form.elements.type.addEventListener('change', syncForm);
+  form.elements.date.value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var data = {}; new FormData(form).forEach(function (v, k) { data[k] = v; });
+    $('#tx-submit').disabled = true; busy = true; say('Checking against the ledger…', true);
+    api('POST', '/api/transactions', data)
+      .then(function (r) { say('Added ' + r.tx_id + '.', true); ['asset', 'units', 'amount', 'fee', 'to_asset', 'to_units'].forEach(function (k) { form.elements[k].value = ''; }); })
+      .catch(function (err) { say(err.message, false); })
+      .then(function () { $('#tx-submit').disabled = false; busy = false; return poll(); });
+  });
+
+  // ---------------------------------------------------------- period close
+  var dlg = $('#close-dlg'), closeForm = $('#close-form');
+  function closeSay(text, ok) { var m = $('#close-msg'); m.textContent = text; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
+  $('#close-open').addEventListener('click', function () {
+    if (!state || state.error) return;
+    var blockers = state.close_blockers || [], t = state.tiles, body = $('#close-body');
+    $('#close-sub').textContent = 'This freezes the current prices as the record for ' + state.today + ', writes the fair value memo, and locks the period against new or deleted transactions.';
+    var dl = el('dl', { class: 'dl' },
+      el('dt', { text: 'Measurement date' }), el('dd', { text: state.today }),
+      el('dt', { text: 'Fair value' }), el('dd', { text: money(t.fair_value) }),
+      el('dt', { text: 'Gain or loss for the period' }), el('dd', { text: money(t.period_gain_loss) }),
+      el('dt', { text: 'Controls' }), el('dd', { text: (state.controls || []).filter(function (c) { return c.passed; }).length + ' of ' + (state.controls || []).length + ' passed' }));
+    (state.holdings || []).forEach(function (h) { dl.append(el('dt', { text: h.asset + ' \u00b7 ' + h.market }), el('dd', { text: units(h.units) + ' \u00d7 ' + money(h.price) })); });
+    body.replaceChildren(dl);
+    if (state.simulated) body.append(el('div', { class: 'banner', text: 'Demo mode: the close and its memo are kept in memory only and marked as simulated. Nothing is written to your files.' }));
+    if (blockers.length) body.append(el('div', { class: 'banner err' }, el('strong', { text: 'Cannot close yet. ' }), blockers.join(' ')));
+    $('#close-submit').disabled = blockers.length > 0;
+    closeSay('', true);
+    dlg.showModal();
+  });
+  $('#close-cancel').addEventListener('click', function () { dlg.close(); });
+  closeForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var data = {}; new FormData(closeForm).forEach(function (v, k) { data[k] = v; });
+    $('#close-submit').disabled = true; busy = true; closeSay('Closing\u2026', true);
+    api('POST', '/api/close', data)
+      .then(function (r) {
+        dlg.close(); openTab('controls'); history.replaceState(null, '', '#controls');
+        window.open('/closes/' + r.period_end + '.html', '_blank', 'noopener');
+      })
+      .catch(function (err) { closeSay(err.message, false); $('#close-submit').disabled = false; })
+      .then(function () { busy = false; return poll(); });
+  });
+
+  $('#method').addEventListener('change', function () { api('POST', '/api/settings', { cost_method: this.value }).then(poll); });
+  $('#pause').addEventListener('click', function () { paused = !paused; this.textContent = paused ? 'Resume' : 'Pause'; if (state) renderStatus(true); if (!paused) poll(); else clearTimeout(timer); });
+  $('#j-filter').addEventListener('input', function () { if (state && !state.error) renderJournal(); });
+  function openTab(name) {
+    if (!document.getElementById('p-' + name)) name = 'overview';
+    document.querySelectorAll('.tab').forEach(function (t) { t.setAttribute('aria-selected', t.dataset.tab === name ? 'true' : 'false'); });
+    document.querySelectorAll('.panel').forEach(function (p) { p.hidden = p.id !== 'p-' + name; });
+  }
+  document.querySelectorAll('.tab').forEach(function (tab) {
+    tab.addEventListener('click', function () { openTab(tab.dataset.tab); history.replaceState(null, '', '#' + tab.dataset.tab); });
+  });
+  window.addEventListener('hashchange', function () { openTab(location.hash.slice(1)); });
+  openTab(location.hash.slice(1));
+
+  // Chart tooltips: one delegated listener, since charts are re-rendered on every tick.
+  var tip = $('#tip');
+  function showTip(target, x, y) {
+    var lines = target.dataset.tip.split('\n');
+    tip.replaceChildren(el('div', { class: 'tip-h', text: lines[0] }));
+    lines.slice(1).forEach(function (l) {
+      var p = l.split('\t'), k = el('span', { class: 'tip-k' });
+      if (p[2]) k.style.background = 'var(' + p[2] + ')';
+      tip.append(el('div', { class: 'tip-r' }, k, el('strong', { text: p[1] }), el('span', { text: p[0] })));
+    });
+    tip.hidden = false;
+    var b = tip.getBoundingClientRect(), left = x + 14, top = y + 14;
+    if (left + b.width > innerWidth - 8) left = x - b.width - 14;
+    if (top + b.height > innerHeight - 8) top = y - b.height - 14;
+    tip.style.left = Math.max(8, left) + 'px'; tip.style.top = Math.max(8, top) + 'px';
+  }
+  document.addEventListener('pointermove', function (e) { var t = e.target.closest && e.target.closest('[data-tip]'); if (t) showTip(t, e.clientX, e.clientY); else tip.hidden = true; });
+  document.addEventListener('focusin', function (e) { var t = e.target.closest && e.target.closest('[data-tip]'); if (t) { var b = t.getBoundingClientRect(); showTip(t, b.left + b.width / 2, b.top + b.height / 2); } });
+  document.addEventListener('focusout', function () { tip.hidden = true; });
+
+  syncForm(); poll();
+})();
+</script>
+</body>
+</html>

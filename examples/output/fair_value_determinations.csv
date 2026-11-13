@@ -1,0 +1,18 @@
+asset,date,market,price,basis,level,rationale
+BTC,2024-09-30,ALPHA-US,63300.00,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+ETH,2024-09-30,ALPHA-US,2600.00,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+BTC,2024-12-31,ALPHA-US,93400.00,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+ETH,2024-12-31,ALPHA-US,3330.00,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+SOL,2024-12-31,ALPHA-US,189.30,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+BTC,2025-03-31,ALPHA-US,82450.00,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+ETH,2025-03-31,ALPHA-US,1822.40,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+SOL,2025-03-31,ALPHA-US,124.60,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+BTC,2025-06-30,ALPHA-US,107150.00,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+ETH,2025-06-30,ALPHA-US,2486.30,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+SOL,2025-06-30,BETA-US,154.95,principal,Level 1,BETA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+BTC,2025-09-30,ALPHA-US,114020.00,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+ETH,2025-09-30,ALPHA-US,4146.50,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+SOL,2025-09-30,BETA-US,208.75,principal,Level 1,BETA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+BTC,2025-12-31,ALPHA-US,96300.00,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+ETH,2025-12-31,ALPHA-US,3310.80,principal,Level 1,ALPHA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
+SOL,2025-12-31,BETA-US,139.45,principal,Level 1,BETA-US has the greatest volume among 2 accessible active market(s). Excluded as inaccessible: GAMMA-GLOBAL.
